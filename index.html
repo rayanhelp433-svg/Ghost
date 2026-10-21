@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#11120f">
+  <meta name="description" content="Ghost, community manager : moderation Discord et Twitch, gestion de communaute et presence en ligne.">
+  <title>Ghost — Community manager &amp; modération</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&amp;family=DM+Mono:wght@400;500&amp;family=DM+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #11120f;
+      --panel: #1a1c18;
+      --panel-raised: #22241f;
+      --paper: #f2f0e9;
+      --muted: #a5a69d;
+      --line: rgba(242, 240, 233, .14);
+      --acid: #d4ff47;
+      --coral: #ff765f;
+      --blue: #91b8ff;
+      --mono: "DM Mono", monospace;
+      --sans: "DM Sans", sans-serif;
+      --display: "Barlow Condensed", Impact, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, a:focus-visible { outline: 2px solid var(--acid); outline-offset: 4px; }
+    ::selection { color: var(--ink); background: var(--acid); }
+
+    .shell { width: min(1180px, calc(100% - 48px)); margin-inline: auto; }
+    .mono { font-family: var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+    .eyebrow { display: flex; align-items: center; gap: 10px; color: var(--acid); font: 11px var(--mono); text-transform: uppercase; letter-spacing: .12em; }
+    .eyebrow::before { content: ""; width: 22px; height: 1px; background: currentColor; }
+
+    .topbar { height: 76px; border-bottom: 1px solid var(--line); display: flex; align-items: center; }
+    .topbar-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: flex; align-items: center; gap: 11px; font: 700 22px var(--display); letter-spacing: .035em; }
+    .brand-mark { width: 30px; height: 30px; display: grid; place-items: center; border: 1px solid var(--acid); color: var(--acid); font: 600 15px var(--mono); transform: rotate(-6deg); }
+    .nav { display: flex; align-items: center; gap: 30px; color: #c8c9c1; font-size: 12px; }
+    .nav a:hover { color: var(--acid); }
+    .discord-link { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid var(--line); font-size: 12px; transition: border-color .2s, background .2s; }
+    .discord-link:hover { border-color: var(--acid); background: rgba(212,255,71,.06); }
+    .avatar { width: 27px; height: 27px; display: grid; place-items: center; border-radius: 50%; background: var(--acid); color: var(--ink); font: 700 12px var(--display); }
+    .presence { width: 8px; height: 8px; margin-left: 1px; border-radius: 50%; background: #8a8b83; box-shadow: 0 0 0 3px rgba(138,139,131,.14); }
+
+    .hero { min-height: 635px; display: grid; grid-template-columns: 1.04fr .96fr; align-items: center; gap: 32px; padding-block: 76px 88px; overflow: hidden; }
+    .hero-copy { position: relative; z-index: 1; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 690px; margin: 20px 0 20px; font: 800 112px/.82 var(--display); text-transform: uppercase; }
+    h1 span { color: var(--acid); }
+    .hero-copy > p { max-width: 475px; margin-bottom: 28px; color: #b7b8ae; font-size: 15px; line-height: 1.8; }
+    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 11px; }
+    .button { min-height: 46px; display: inline-flex; align-items: center; justify-content: center; gap: 12px; padding: 0 16px; border: 1px solid transparent; font-size: 12px; font-weight: 700; transition: transform .2s, background .2s, border-color .2s; }
+    .button:hover { transform: translateY(-2px); }
+    .button-primary { background: var(--acid); color: var(--ink); }
+    .button-secondary { border-color: var(--line); color: var(--paper); }
+    .button-secondary:hover { border-color: var(--paper); }
+    .button .arrow { font-size: 17px; }
+    .hero-note { display: flex; align-items: center; gap: 9px; margin-top: 26px; color: #85867f; font: 10px var(--mono); text-transform: uppercase; letter-spacing: .06em; }
+    .hero-note span { width: 6px; height: 6px; background: var(--coral); border-radius: 50%; }
+
+    .hero-visual { min-height: 440px; position: relative; display: flex; justify-content: center; align-items: center; }
+    .hero-photo { position: absolute; inset: 0 0 0 8%; overflow: hidden; opacity: .65; }
+    .hero-photo img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(.65) contrast(1.08); }
+    .hero-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, var(--ink), rgba(17,18,15,.23) 42%, rgba(17,18,15,.68)), linear-gradient(0deg, var(--ink), transparent 55%); }
+    .photo-label { position: absolute; top: 18px; right: 10px; color: rgba(242,240,233,.63); font: 9px var(--mono); writing-mode: vertical-rl; }
+    .chat-window { position: relative; z-index: 1; width: min(390px, 90%); margin: 40px 0 0 14px; background: rgba(27,29,25,.95); border: 1px solid rgba(242,240,233,.2); box-shadow: 16px 18px 0 rgba(0,0,0,.24); animation: arrive .8s .12s both; }
+    .window-bar { height: 39px; display: flex; align-items: center; gap: 6px; padding: 0 13px; border-bottom: 1px solid var(--line); }
+    .window-dot { width: 7px; height: 7px; background: #6b6c64; border-radius: 50%; }
+    .window-name { margin-left: auto; color: #97988f; font: 9px var(--mono); }
+    .chat-head { display: flex; align-items: center; gap: 11px; padding: 17px 17px 13px; border-bottom: 1px solid var(--line); }
+    .server-icon { width: 35px; height: 35px; display: grid; place-items: center; background: var(--coral); color: var(--ink); font: 700 17px var(--display); }
+    .chat-head strong { display: block; font-size: 12px; }
+    .chat-head small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .channel { padding: 14px 16px 4px; color: #96978f; font: 10px var(--mono); }
+    .message { display: flex; gap: 10px; padding: 12px 16px; }
+    .message-avatar { width: 29px; height: 29px; flex: 0 0 auto; display: grid; place-items: center; background: #586a56; color: white; font-size: 10px; font-weight: 700; }
+    .message-avatar.ghost-avatar { background: var(--acid); color: var(--ink); }
+    .message-content { color: #d8d9d1; font-size: 11px; line-height: 1.6; }
+    .message-content strong { color: white; }
+    .message-content time { margin-left: 6px; color: #777970; font: 9px var(--mono); }
+    .message-content p { margin: 3px 0 0; }
+    .mention { color: var(--acid); background: rgba(212,255,71,.1); padding: 1px 3px; }
+    .fake-label { display: inline-flex; margin-left: 5px; padding: 2px 4px; background: rgba(255,118,95,.15); color: var(--coral); font: 8px var(--mono); }
+    .chat-input { margin: 9px 13px 13px; padding: 11px 12px; background: #252721; color: #73756d; font-size: 10px; }
+    .chat-input span { float: right; color: var(--acid); }
+    .sticker { position: absolute; right: 0; bottom: 29px; z-index: 2; width: 104px; height: 104px; display: grid; place-items: center; border: 1px solid var(--acid); color: var(--acid); background: var(--ink); transform: rotate(8deg); }
+    .sticker span { font: 700 17px/.94 var(--display); text-align: center; text-transform: uppercase; }
+    .sticker b { display: block; margin-top: 5px; font: 9px var(--mono); }
+
+    .ticker { overflow: hidden; border-block: 1px solid var(--line); background: var(--acid); color: var(--ink); }
+    .ticker-track { width: max-content; display: flex; gap: 26px; padding: 13px 0; animation: ticker 28s linear infinite; font: 600 12px var(--mono); text-transform: uppercase; letter-spacing: .06em; }
+    .ticker-track span::after { content: "✳"; margin-left: 26px; }
+
+    .services { padding-block: 105px 112px; }
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin-bottom: 36px; }
+    h2 { margin: 14px 0 0; font: 700 64px/.92 var(--display); text-transform: uppercase; }
+    .section-heading > p { max-width: 310px; margin: 0 0 4px; color: var(--muted); font-size: 12px; line-height: 1.8; }
+    .service-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .service { min-height: 226px; padding: 25px 25px 26px 0; }
+    .service + .service { border-left: 1px solid var(--line); padding-left: 25px; }
+    .service-number { color: var(--acid); font: 11px var(--mono); }
+    .service h3 { margin: 28px 0 9px; font: 600 28px var(--display); text-transform: uppercase; }
+    .service p { max-width: 285px; margin-bottom: 0; color: var(--muted); font-size: 12px; line-height: 1.8; }
+
+    .stream-section { padding-block: 75px 102px; background: #e8e6dc; color: var(--ink); }
+    .stream-section .eyebrow { color: #52632b; }
+    .stream-layout { display: grid; grid-template-columns: .7fr 1.3fr; align-items: center; gap: 55px; }
+    .stream-copy h2 { max-width: 340px; margin-bottom: 19px; }
+    .stream-copy p { max-width: 330px; color: #55564f; font-size: 13px; line-height: 1.8; }
+    .stream-status { display: inline-flex; align-items: center; gap: 8px; margin-top: 4px; padding: 8px 9px; border: 1px solid rgba(17,18,15,.22); font: 9px var(--mono); text-transform: uppercase; }
+    .stream-status i { width: 7px; height: 7px; border-radius: 50%; background: var(--coral); }
+    .stream-frame { border: 1px solid #393a35; background: #141512; box-shadow: 8px 8px 0 rgba(17,18,15,.12); }
+    .stream-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 13px; color: #d8d9d1; font: 9px var(--mono); text-transform: uppercase; }
+    .live-pill { color: white; background: #ed5148; padding: 4px 6px; }
+    .stream-screen { min-height: 250px; position: relative; display: grid; place-items: center; overflow: hidden; background: #242820; }
+    .stream-screen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .52; filter: grayscale(.5); }
+    .stream-screen::after { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(12,14,11,.2), rgba(12,14,11,.75)); }
+    .play { position: relative; z-index: 1; width: 53px; height: 53px; display: grid; place-items: center; padding-left: 3px; border: 1px solid rgba(255,255,255,.8); border-radius: 50%; color: white; font-size: 18px; }
+    .stream-title { position: absolute; z-index: 1; left: 17px; bottom: 14px; color: white; font-size: 11px; }
+    .stream-title span { display: block; margin-bottom: 5px; color: var(--acid); font: 9px var(--mono); text-transform: uppercase; }
+    .mod-bar { display: flex; flex-wrap: wrap; gap: 8px; padding: 11px 13px; border-top: 1px solid #363831; }
+    .mod-chip { padding: 5px 7px; border: 1px solid #41433b; color: #c7c9bf; font: 8px var(--mono); text-transform: uppercase; }
+    .mod-chip b { margin-right: 4px; color: var(--acid); }
+    .stream-disclaimer { margin: 8px 0 0; color: #77786f; font: 9px var(--mono); }
+
+    .dossier { padding-block: 105px 110px; }
+    .dossier-wrap { position: relative; display: grid; grid-template-columns: .9fr 1.1fr; border: 1px solid rgba(242,240,233,.23); background: #191a17; }
+    .dossier-wrap::before { content: "DOCUMENT FICTIF"; position: absolute; z-index: 2; top: 30px; right: -12px; padding: 7px 11px; border: 1px solid var(--coral); background: var(--ink); color: var(--coral); font: 10px var(--mono); letter-spacing: .1em; transform: rotate(4deg); }
+    .dossier-photo { min-height: 420px; position: relative; overflow: hidden; background: #24251f; }
+    .dossier-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.12); opacity: .72; }
+    .dossier-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(17,18,15,.8), transparent 54%); }
+    .photo-index { position: absolute; z-index: 1; left: 19px; bottom: 17px; color: white; font: 9px var(--mono); }
+    .dossier-info { padding: 48px 44px 38px; }
+    .dossier-info .eyebrow { color: var(--coral); }
+    .dossier-info h2 { margin: 17px 0 9px; font-size: 76px; }
+    .dossier-role { margin-bottom: 25px; color: var(--acid); font: 11px var(--mono); text-transform: uppercase; }
+    .dossier-info > p { max-width: 460px; color: #aeb0a6; font-size: 12px; line-height: 1.85; }
+    .file-data { display: grid; grid-template-columns: 1fr 1fr; gap: 0 22px; margin-top: 28px; border-top: 1px solid var(--line); }
+    .file-data div { padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .file-data dt { margin-bottom: 5px; color: #777970; font: 8px var(--mono); text-transform: uppercase; }
+    .file-data dd { margin: 0; color: #e2e3dc; font-size: 11px; }
+    .fiction-note { margin-top: 20px !important; color: #85867d !important; font-size: 10px !important; }
+
+    .contact { padding-block: 60px; border-top: 1px solid var(--line); background: var(--acid); color: var(--ink); }
+    .contact-inner { display: flex; align-items: center; justify-content: space-between; gap: 35px; }
+    .contact h2 { max-width: 550px; margin-top: 13px; font-size: 82px; }
+    .contact .eyebrow { color: #303721; }
+    .contact .button { border-color: var(--ink); }
+    .contact .button:hover { background: var(--ink); color: var(--acid); }
+    .socials { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 25px; }
+    .socials a { padding: 8px 10px; border: 1px solid rgba(17,18,15,.3); font: 9px var(--mono); text-transform: uppercase; transition: background .2s, color .2s; }
+    .socials a:hover { background: var(--ink); color: var(--acid); }
+    footer { padding-block: 19px; color: #878981; font: 9px var(--mono); }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .footer-inner span:last-child { color: var(--coral); }
+
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .65s ease, transform .65s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    @keyframes ticker { to { transform: translateX(-50%); } }
+    @keyframes arrive { from { opacity: 0; transform: translateY(15px) rotate(1deg); } to { opacity: 1; transform: translateY(0) rotate(0); } }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+    @media (max-width: 780px) {
+      .shell { width: min(100% - 34px, 560px); }
+      .topbar { height: 66px; }
+      .nav { display: none; }
+      .discord-link { gap: 7px; padding: 7px 9px; font-size: 10px; }
+      .hero { min-height: auto; grid-template-columns: 1fr; gap: 16px; padding-block: 65px 44px; }
+      h1 { font-size: 88px; }
+      h2 { font-size: 52px; }
+      .dossier-info h2 { font-size: 64px; }
+      .contact h2 { font-size: 58px; }
+      .hero-copy > p { font-size: 14px; }
+      .hero-visual { min-height: 395px; }
+      .hero-photo { inset: 0; }
+      .chat-window { margin-left: 0; }
+      .sticker { right: -4px; bottom: 12px; width: 84px; height: 84px; }
+      .sticker span { font-size: 14px; }
+      .services, .dossier { padding-block: 75px; }
+      .section-heading { align-items: start; flex-direction: column; gap: 13px; }
+      .section-heading > p { max-width: 440px; }
+      .service-grid { grid-template-columns: 1fr; }
+      .service { min-height: auto; padding: 21px 0 23px; }
+      .service + .service { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; }
+      .service h3 { margin-top: 16px; }
+      .stream-section { padding-block: 67px 75px; }
+      .stream-layout { grid-template-columns: 1fr; gap: 28px; }
+      .stream-copy h2 { max-width: 430px; }
+      .stream-screen { min-height: 220px; }
+      .dossier-wrap { grid-template-columns: 1fr; }
+      .dossier-wrap::before { top: 18px; right: -7px; }
+      .dossier-photo { min-height: 280px; }
+      .dossier-info { padding: 32px 23px 26px; }
+      .contact { padding-block: 46px; }
+      .contact-inner { align-items: flex-start; flex-direction: column; gap: 25px; }
+    }
+    @media (max-width: 390px) {
+      .brand { font-size: 19px; }
+      .avatar { width: 23px; height: 23px; }
+      .discord-link { font-size: 9px; }
+      h1 { font-size: 76px; }
+      h2 { font-size: 46px; }
+      .dossier-info h2 { font-size: 58px; }
+      .contact h2 { font-size: 48px; }
+      .hero { padding-top: 54px; }
+      .actions .button { flex: 1; padding-inline: 10px; font-size: 10px; }
+      .file-data { grid-template-columns: 1fr; }
+      .footer-inner { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="#accueil" aria-label="Ghost, accueil"><span class="brand-mark">G.</span> GHOST / CM</a>
+      <nav class="nav" aria-label="Navigation principale">
+        <a href="#services">Services</a>
+        <a href="#twitch">Twitch</a>
+        <a href="#dossier">Le dossier</a>
+      </nav>
+      <a class="discord-link" href="https://discord.com/app" target="_blank" rel="noreferrer" aria-label="Ouvrir Discord, utilisateur error220726">
+        <span class="avatar" aria-hidden="true">G</span><span>error220726</span><span class="presence" aria-label="Statut non connecté"></span>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero shell" id="accueil">
+      <div class="hero-copy">
+        <div class="eyebrow">Communautés sous contrôle</div>
+        <h1>Ghost<br><span>garde</span><br>le chat.</h1>
+        <p>Community manager et modérateur Discord &amp; Twitch. Une communauté vivante, un chat accueillant, et les débordements traités avant qu’ils ne prennent toute la place.</p>
+        <div class="actions">
+          <a class="button button-primary" href="mailto:rayanhelp433@gmail.com?subject=Projet%20community%20management">Parler d’un projet <span class="arrow">↗</span></a>
+          <a class="button button-secondary" href="#services">Voir les services <span class="arrow">↓</span></a>
+        </div>
+        <div class="hero-note"><span></span> Profil et présence Discord non connectés en direct</div>
+      </div>
+      <div class="hero-visual" aria-label="Aperçu illustratif d'une conversation Discord">
+        <div class="hero-photo">
+          <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&amp;fit=crop&amp;w=1100&amp;q=85" alt="Équipe réunie autour d'un ordinateur" fetchpriority="high">
+          <span class="photo-label">COMMUNITY OPERATIONS / 001</span>
+        </div>
+        <div class="chat-window">
+          <div class="window-bar"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span><span class="window-name">DISCORD / APERÇU FICTIF</span></div>
+          <div class="chat-head"><span class="server-icon">H</span><span><strong>Le Hangar</strong><small>1 284 membres · serveur de démonstration</small></span></div>
+          <div class="channel"># · général</div>
+          <div class="message"><span class="message-avatar">M</span><div class="message-content"><strong>mika</strong><time>21:04</time><p>hey tout le monde !! 👋</p></div></div>
+          <div class="message"><span class="message-avatar ghost-avatar">G</span><div class="message-content"><strong>ghost</strong><span class="fake-label">MOD</span><time>21:04</time><p>Hey <span class="mention">@mika</span>, bienvenue ! Les règles sont dans <span class="mention">#accueil</span> ✳</p></div></div>
+          <div class="chat-input">Message dans # général <span>↗</span></div>
+        </div>
+        <div class="sticker"><span>Humain<br>avant tout<b>● GHOST TEAM</b></span></div>
+      </div>
+    </section>
+
+    <div class="ticker" aria-hidden="true"><div class="ticker-track"><span>Discord moderation</span><span>Twitch chat</span><span>Community care</span><span>Discord moderation</span><span>Twitch chat</span><span>Community care</span><span>Discord moderation</span><span>Twitch chat</span><span>Community care</span><span>Discord moderation</span><span>Twitch chat</span><span>Community care</span></div></div>
+
+    <section class="services shell" id="services">
+      <div class="section-heading reveal">
+        <div><div class="eyebrow">Un chat propre, une commu qui reste</div><h2>Le calme,<br>c’est du travail.</h2></div>
+        <p>La modération ne consiste pas à bannir à l’aveugle. On pose un cadre clair, on garde le bon ton et on intervient avec discernement.</p>
+      </div>
+      <div class="service-grid reveal">
+        <article class="service"><span class="service-number">01 / DISCORD</span><h3>Un serveur qui vit</h3><p>Accueil des nouveaux, organisation des salons, règles lisibles et ambiance entretenue au quotidien.</p></article>
+        <article class="service"><span class="service-number">02 / MODÉRATION</span><h3>Du cadre, pas du chaos</h3><p>Prévention du spam, gestion des conflits et interventions proportionnées. La sécurité de la communauté d’abord.</p></article>
+        <article class="service"><span class="service-number">03 / TWITCH</span><h3>Le live sans friction</h3><p>Chat surveillé, soutien au streamer et relais avec les modérateurs pour que le live reste concentré sur le contenu.</p></article>
+      </div>
+    </section>
+
+    <section class="stream-section" id="twitch">
+      <div class="shell stream-layout">
+        <div class="stream-copy reveal">
+          <div class="eyebrow">Dans la régie</div>
+          <h2>Le live est à toi. Le chat est carré.</h2>
+          <p>Un aperçu de régie fictif : actions de modération, veille du chat et coordination avec l’équipe pendant le stream.</p>
+          <span class="stream-status"><i></i>Simulation visuelle · aucun live actif</span>
+        </div>
+        <div class="reveal">
+          <div class="stream-frame">
+            <div class="stream-top"><span><b class="live-pill">LIVE — MOCKUP</b> &nbsp; Twitch / Ghost en régie</span><span>02:14:08</span></div>
+            <div class="stream-screen">
+              <img src="https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&amp;fit=crop&amp;w=1200&amp;q=85" alt="Installation de jeu vidéo et écrans, illustration du faux stream" loading="lazy">
+              <span class="play" aria-hidden="true">▶</span>
+              <div class="stream-title"><span>APERÇU DE STREAM · FICTIF</span>Session du soir — on est ensemble.</div>
+            </div>
+            <div class="mod-bar"><span class="mod-chip"><b>●</b> Chat suivi</span><span class="mod-chip"><b>✓</b> Règles actives</span><span class="mod-chip"><b>⌁</b> Équipe coordonnée</span><span class="mod-chip">MODE DÉMO</span></div>
+          </div>
+          <p class="stream-disclaimer">INTERFACE IMAGINAIRE POUR LA PRÉSENTATION — PAS UN STREAM RÉEL</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="dossier shell" id="dossier">
+      <div class="section-heading reveal">
+        <div><div class="eyebrow">Archives / accès public</div><h2>Le dossier Ghost.</h2></div>
+        <p>Un profil de terrain, un seul objectif : que les gens aient envie de revenir dans la communauté.</p>
+      </div>
+      <article class="dossier-wrap reveal">
+        <div class="dossier-photo">
+          <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&amp;fit=crop&amp;w=1000&amp;q=85" alt="Personne travaillant sur un ordinateur, portrait d'ambiance" loading="lazy">
+          <span class="photo-index">PHOTO D’ILLUSTRATION / 01</span>
+        </div>
+        <div class="dossier-info">
+          <div class="eyebrow">Fiche personnage · fiction</div>
+          <h2>Rayan<br>« Ghost »</h2>
+          <div class="dossier-role">Community manager · cybersécurité · agent du FBI (fictif)</div>
+          <p>Le genre de personne qui voit le message suspect avant qu’il ne devienne le problème de tout le serveur. À l’aise dans l’action, mais toujours avec une règle simple : protéger les gens sans casser l’ambiance.</p>
+          <dl class="file-data">
+            <div><dt>Nom de code</dt><dd>Ghost</dd></div>
+            <div><dt>Spécialité</dt><dd>Discord &amp; Twitch</dd></div>
+            <div><dt>Mode opératoire</dt><dd>Calme, clair, humain</dd></div>
+            <div><dt>Affiliation</dt><dd>Indépendant · fictif</dd></div>
+          </dl>
+          <p class="fiction-note">Le personnage « Agent du FBI » est une fiction/parodie. Rayan n’est pas agent du FBI et cette page n’est affiliée à aucune agence gouvernementale.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="contact" id="contact">
+      <div class="shell contact-inner">
+        <div>
+          <div class="eyebrow">On monte une équipe ?</div>
+          <h2>Ta commu mérite mieux que « slow mode ».</h2>
+          <div class="socials" aria-label="Réseaux sociaux">
+            <a href="https://www.instagram.com/ghostlerharby/" target="_blank" rel="noreferrer">Instagram ↗</a>
+            <a href="https://www.tiktok.com/@lerharby" target="_blank" rel="noreferrer">TikTok ↗</a>
+            <a href="https://www.snapchat.com/add/isnotme1111" target="_blank" rel="noreferrer">Snapchat ↗</a>
+          </div>
+        </div>
+        <a class="button" href="mailto:rayanhelp433@gmail.com?subject=Parlons%20de%20ma%20communaute">Écrire à Ghost <span class="arrow">↗</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="shell footer-inner"><span>© <span id="year"></span> GHOST / COMMUNITY MANAGEMENT</span><span>FBI : FICTIF · MOCKUPS : ILLUSTRATIFS</span></div></footer>
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll(".reveal").forEach((element) => revealObserver.observe(element));
+  </script>
+</body>
+</html>
